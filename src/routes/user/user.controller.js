@@ -1,6 +1,7 @@
 const express = require("express");
 const errorHandler = require("../../middleware/error");
 const User = require("../../models/user");
+const { generateAuthToken } = require("../../utils/helpers");
 const createUserSchema = require("./validationSchema");
 
 const router = express.Router();
@@ -21,6 +22,26 @@ router.get(
     res.status(200).send(user);
   })
 );
+
+router.post("/login", async (req, res) => {
+  const user = await User.findOne({ email: req.body.email });
+
+  if (!user) {
+    return res.status(400).send({ message: "Invalid Email or Password" });
+  }
+
+  if (req.body.password !== "khizar123") {
+    return res.status(400).send({ message: "Invalid Email or Password" });
+  }
+
+  const token = generateAuthToken({
+    username: user.username,
+    email: user.email,
+    id: user._id,
+  });
+
+  res.status(200).send({ message: "success", token });
+});
 
 router.post("/", async (req, res) => {
   const payload = req.body;
