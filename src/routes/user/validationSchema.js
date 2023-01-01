@@ -2,10 +2,10 @@ const Joi = require("joi");
 
 const createUserSchema = (user) => {
   const schema = Joi.object().keys({
-    username: Joi.string().min(8).required(),
+    name: Joi.string().min(3).required(),
     email: Joi.string().email().required(),
     password: Joi.string().required(),
-    isStudent: Joi.boolean().optional(),
+    phone: Joi.string().min(11).max(11).required(),
   });
 
   return schema.validate(user);

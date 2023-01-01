@@ -1,30 +1,28 @@
+const User = require("../models/user");
 const { verifyAuthToken } = require("../utils/helpers");
 
-const authHandler = (req, res, next) => {
-  if (!req.headers.api) {
+const authHandler = async(req, res, next) => {
+  if (!req.headers.token) {
     return res
       .status(400)
       .send({ message: "Access denied, Auth token is not provided" });
   }
 
   try {
-    const token = req.headers.api;
+    const token = req.headers.token;
     const isTokenValid = verifyAuthToken(token);
     if (isTokenValid) {
-      next();
+      const user = await User.findOne({ token: token });
+      if (user) {
+        next();
+      }else{
+        return res.status(400).send({ message: "Access denied, Expired token" });
+      
+      }
     }
   } catch (error) {
-    return res.status(400).send({ message: error.message });
-    next();
+    return res.status(400).send({ message: "Access denied, Unauthorized token" });
   }
-
-  // if (
-  //   req.headers.api !== undefined
-  // ) {
-  //   next();
-  // } else {
-  //   return res.status(404).send({ message: "API key is not valid!" });
-  // }
 };
-// 2864de72-1451-44f8-8882-38e6d3c3fd0f
+
 module.exports = authHandler;
