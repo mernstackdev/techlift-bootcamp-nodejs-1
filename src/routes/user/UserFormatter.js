@@ -5,7 +5,7 @@ const FormateUserObj = (userObj) => {
     obj.name = userObj.name;
     obj.email = userObj.email;
     obj.phone = userObj.phone;
-
+    obj.image = userObj.image;
     return obj;
 };
 

@@ -8,7 +8,12 @@ const jwt = require("jsonwebtoken");
 const authHandler = require("../../middleware/auth");
 const router = express.Router();
 require("dotenv").config();
-
+const cloudinary = require("cloudinary").v2;
+cloudinary.config({
+  cloud_name: "dbfwvp72n",
+  api_key: "521163633118111",
+  api_secret: "J-pKLCUytlP_Qfq2r6rhmWb5w9c",
+});
 router.get(
   "/",
   authHandler,
@@ -97,13 +102,30 @@ router.post("/signup", async (req, res) => {
       .send({ status: false, message: "Phone already exist" });
   }
 
+  try {
+    await cloudinary.uploader.upload(
+      req.body.image,
+      { public_id: "olympic_flag" },
+      async (error, result) => {
+        if (error) {
+          res.status(400).send({ status: false, message: error.message });
+        } else {
+          payload.image = result.secure_url;
+          // await User.findOneAndUpdate({ _id: user._id }, { image: result.secure_url });
+          // console.log(result);
+        }
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
   let user = new User(payload);
-
   user = await user.save();
+
   const UserObj = FormateUserObj(user);
   res
     .status(200)
-    .send({ status: true, message: "Signup successfully!", UserObj });
+    .send({ status: true, message: "Signup successfully!", data: UserObj });
 });
 
 module.exports = router;

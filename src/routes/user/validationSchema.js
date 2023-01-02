@@ -6,6 +6,7 @@ const createUserSchema = (user) => {
     email: Joi.string().email().required(),
     password: Joi.string().required(),
     phone: Joi.string().min(11).max(11).required(),
+    image: Joi.string().optional()
   });
 
   return schema.validate(user);
